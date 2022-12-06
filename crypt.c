@@ -37,12 +37,6 @@ double* crypt(int kyber_implementation, char* input_file_path, char* encryption_
 		and then decrypt the ciphertext file to output file "./Outputs/Decryption/lotus_decrypted.jpg"
 	*/
 
-
-	//char* kyber_implementation = "Kyber1024";
-	//char* input_file_path = "./input/monkey1.bmp";
-	//char* encryption_file_path = "./Outputs/Encryption/monkey1.bmp";
-	//char* decryption_file_path = "./Outputs/Decryption/monkey1.bmp";
-
 	// Initialize Kyber512 variables
 	uint8_t public_key_512[OQS_KEM_kyber_512_length_public_key] = { "" };
 	uint8_t secret_key_512[OQS_KEM_kyber_512_length_secret_key] = { "" };
@@ -123,7 +117,6 @@ double* crypt(int kyber_implementation, char* input_file_path, char* encryption_
 		i += 32;
 	}
 	end_enc = clock();
-	difference_enc =  ((long double) (end_enc - start_enc) / (CLOCKS_PER_SEC)) * 1000;
 	fclose(f_input);
 	fclose(f_encryption);
 
@@ -171,10 +164,11 @@ double* crypt(int kyber_implementation, char* input_file_path, char* encryption_
 		fwrite(buffer32, 1, 32, f_decryption);
 	}
 	end_dec = clock();
-	difference_dec =  ((long double) (end_dec - start_dec)/ (CLOCKS_PER_SEC)) * 1000;
+	difference_enc = (long double) (end_enc - start_enc) / (CLOCKS_PER_SEC);
+	difference_dec =  (long double) (end_dec - start_dec)/ (CLOCKS_PER_SEC);
 	fclose(f_encryption);
 	fclose(f_decryption);
-	printf("Time to encrypt file %s (in msec): %3.1Lf\n", input_file_path, difference_enc);
-	printf("Time to decrypt file %s (in msec): %3.1Lf\n", input_file_path, difference_dec);
+	printf("Time to encrypt file %s (s): %Lf\n", input_file_path, difference_enc);
+	printf("Time to decrypt file %s (s): %Lf\n", input_file_path, difference_dec);
 	return 0;
 }

@@ -39,7 +39,7 @@ int main()
 string getInputFile()
 {
 	string path;
-	cout << "Enter input file, including extension (from Input folder):\n\t";
+	cout << "Enter input file, including extension (from Input folder):\n\tEnter:\t";
 	cin >> path;
 	path = "Input/" + path;
 	return path;
@@ -48,7 +48,7 @@ string getInputFile()
 int getKyber()
 {
 	int kyberImplementation;
-	cout << "Enter Kyber Implementation: 1. Kyber512\t2. Kyber768\t3. Kyber1024\n";
+	cout << "\nEnter Kyber Implementation: 1. Kyber512\t2. Kyber768\t3. Kyber1024\n\tEnter:\t";
 	cin >> kyberImplementation;
 	
 	return kyberImplementation;
@@ -105,7 +105,14 @@ int getFaces(string inputPath, int kyberImplementation)
 
 
 		crypt(kyberImplementation,output_path,encrypted_path,decrypted_path);
-		
+		Mat encrypted = imread(encrypted_path);
+		Mat decrypted = imread(decrypted_path);
+		string encrypted_window = "Encrypted Image " + to_string(i);
+		string decrypted_window = "Decrypted Image " + to_string(i);
+		namedWindow(encrypted_window, WINDOW_NORMAL);
+		namedWindow(decrypted_window, WINDOW_NORMAL);
+		imshow(encrypted_window, encrypted);
+		imshow(decrypted_window, decrypted);
 	}
 
 	// output full image with overlayed rectangles
