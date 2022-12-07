@@ -1,8 +1,11 @@
 clear;
 clf;
 clc;
-plain=imread('./Input/monkey1.bmp');
-cipher_image = imread('./Outputs/Encryption/enc_monkey1.bmp');
+
+plain=imread('../Output/face1.bmp');
+cipher_image = imread('../Output/Encryption/face1.bmp');
+
+results = NPCR_and_UACI( plain, cipher_image, 1, 255 );
 
 Red_plain = plain(:,:,1);
 Green_plain = plain(:,:,2);
@@ -42,6 +45,9 @@ fprintf("Entropy of blue channel (Cipher Image): %3.4f\n", entropy_cipher_blue);
 fprintf("Entropy difference (Red Channel) %3.4f\n",entropy_red-entropy_cipher_red);
 fprintf("Entropy difference (Green Channel) %3.4f\n",entropy_green-entropy_cipher_green);
 fprintf("Entropy difference (Blue Channel) %3.4f\n",entropy_blue-entropy_cipher_blue);
+fprintf("NPCR score: %3.4f\n",results.npcr_score);
+fprintf("NPCR pval: %3.4f\n",results.npcr_pval);
+fprintf("NPCR dist: %3.4f\n",results.npcr_dist);
 figure(1);
 bar(yRed, 'Red') ,hold on , bar(yGreen, 'Green'), hold on ,bar( yBlue, 'Blue');
 legend('Red Value','Green Value','Blue Value');
