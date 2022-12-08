@@ -14,8 +14,10 @@ const string CASCADE_CLASSIFIER = "Resources/haarcascade_frontalface_default.xml
 // function declarations
 string getInputFile();
 int getKyber();
-int getFaces(string, int);
-double* crypt(int kyber_implementation, char* input_file_path, char* encryption_file_path, char* decryption_file_path);
+int getMode();
+int getFaces(string, int, int);
+int crypt(int kyber_implementation, char* input_file_path, char* encryption_file_path, char* decryption_file_path, int mode);
+inline bool exists_test(const string& name);
 
 // Main
 int main() 
@@ -23,10 +25,11 @@ int main()
 	// Step 1: get input file from user
 	string path = getInputFile();
 	int kyberImplementation = getKyber();
+	int mode = getMode();
 	Mat img = imread(path);
 
 	// Step 2: Facial Recognition: generate face image files, duplicate input image with face rectangles drawn
-	getFaces(path, kyberImplementation);
+	getFaces(path, kyberImplementation, mode);
 
 	// TODO Step 3: encrypt and decrypt each face file
 
@@ -38,25 +41,60 @@ int main()
 // TODO:  add input validation
 string getInputFile()
 {
+	int condition = 0;
 	string path;
 	cout << "Enter input file, including extension (from Input folder):\n\tEnter:\t";
-	cin >> path;
-	path = "Input/" + path;
+	while (!condition) {
+		cin >> path;
+		path = "Input/" + path;
+		if (exists_test(path)) {
+			condition = 1;
+		}
+		else {
+			printf("\nInvalid File Path\n\tEnter:\t");
+		}
+	}
 	return path;
 }
 
 int getKyber()
 {
+	int condition = 0;
 	int kyberImplementation;
 	cout << "\nEnter Kyber Implementation: 1. Kyber512\t2. Kyber768\t3. Kyber1024\n\tEnter:\t";
-	cin >> kyberImplementation;
-	
+	while (!condition) {
+		cin >> kyberImplementation;
+		if (kyberImplementation >= 1 && kyberImplementation <= 3) {
+			condition = 1;
+		}
+		else {
+			printf("\nInvalid Input (1-3)\n\tEnter:\t");
+		}
+	}
 	return kyberImplementation;
+}
+
+int getMode()
+{
+	int condition = 0;
+	int mode;
+	cout << "\nEnter Processing Mode: 1. Single Threaded\t2. Multi-Threaded (CPU)\t3. Multi-Threaded (GPU)\n\tEnter:\t";
+	while (!condition) {
+		cin >> mode;
+		if (mode >= 1 && mode <= 3) {
+			condition = 1;
+		}
+		else {
+			printf("\nInvalid Input (1-3)\n\tEnter:\t");
+		}
+	}
+
+	return mode;
 }
 
 
 // Step 2: detect faces, output face files and face outlines file
-int getFaces(string inputPath, int kyberImplementation)
+int getFaces(string inputPath, int kyberImplementation, int mode)
 {
 	// Load facial recognition XML
 	CascadeClassifier faceCascade;
@@ -104,15 +142,17 @@ int getFaces(string inputPath, int kyberImplementation)
 		strncpy(decrypted_path, decryptedPath.c_str(), sizeof(decrypted_path));
 
 
-		crypt(kyberImplementation,output_path,encrypted_path,decrypted_path);
-		Mat encrypted = imread(encrypted_path);
-		Mat decrypted = imread(decrypted_path);
-		string encrypted_window = "Encrypted Image " + to_string(i);
-		string decrypted_window = "Decrypted Image " + to_string(i);
-		namedWindow(encrypted_window, WINDOW_NORMAL);
-		namedWindow(decrypted_window, WINDOW_NORMAL);
-		imshow(encrypted_window, encrypted);
-		imshow(decrypted_window, decrypted);
+		crypt(kyberImplementation,output_path,encrypted_path,decrypted_path, mode);
+		if (exists_test(encrypted_path) && exists_test(decrypted_path)) {
+			Mat encrypted = imread(encrypted_path);
+			Mat decrypted = imread(decrypted_path);
+			string encrypted_window = "Encrypted Image " + to_string(i);
+			string decrypted_window = "Decrypted Image " + to_string(i);
+			namedWindow(encrypted_window, WINDOW_NORMAL);
+			namedWindow(decrypted_window, WINDOW_NORMAL);
+			imshow(encrypted_window, encrypted);
+			imshow(decrypted_window, decrypted);
+		}
 	}
 
 	// output full image with overlayed rectangles
@@ -123,4 +163,14 @@ int getFaces(string inputPath, int kyberImplementation)
 	waitKey(0);
 
 	return 0;
+}
+
+inline bool exists_test(const string& name) {
+	if (FILE* file = fopen(name.c_str(), "r")) {
+		fclose(file);
+		return true;
+	}
+	else {
+		return false;
+	}
 }
